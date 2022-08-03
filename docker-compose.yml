@@ -1,0 +1,34 @@
+version: '3.9'
+
+services:
+  nest-api:
+    image: nest-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 3000:${NEST_PORT}
+    depends_on:
+      - nest-postgres
+    env_file:
+      - .env
+    volumes:
+      - ./src:/app/src
+    stdin_open: true
+    tty: true
+
+  nest-postgres:
+    image: postgres:13
+    container_name: nest-postgres
+    restart: always
+    ports:
+      - ${DB_PORT}:5432
+    env_file:
+      - .env
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+volumes:
+  postgres:
+    name: nest-db

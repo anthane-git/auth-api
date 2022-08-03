@@ -1,3 +1,7 @@
+# vars
+.env
+.env.local
+
 # compiled output
 /dist
 /node_modules
