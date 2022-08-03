@@ -4,6 +4,6 @@ import { Controller, Get } from '@nestjs/common';
 export class AppController {
   @Get()
   root(): object {
-    return { message: 'hello blaze ' };
+    return { message: 'Auth Api Reached!' };
   }
 }
