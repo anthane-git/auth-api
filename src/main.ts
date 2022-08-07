@@ -12,6 +12,7 @@ const bootstrap = async () => {
 		.setTitle('Customer Identity API')
 		.setDescription('Customer identity access management service')
 		.setVersion('1.0')
+		.addBearerAuth()
 		.build();
 
 	const document = SwaggerModule.createDocument(app, config);
