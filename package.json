@@ -1,10 +1,10 @@
 {
 	"name": "identity-api",
 	"version": "0.0.1",
-	"description": "",
-	"author": "",
+	"description": "Customer identity access management service.",
+	"author": "BlazeIsClone",
 	"private": true,
-	"license": "UNLICENSED",
+	"license": "GPL",
 	"scripts": {
 		"prebuild": "rimraf dist",
 		"build": "nest build",
@@ -27,6 +27,7 @@
 		"@nestjs/jwt": "^9.0.0",
 		"@nestjs/passport": "^9.0.0",
 		"@nestjs/platform-express": "^9.0.0",
+		"@nestjs/swagger": "^6.0.5",
 		"@prisma/client": "^4.1.1",
 		"argon2": "^0.28.7",
 		"class-transformer": "^0.5.1",
