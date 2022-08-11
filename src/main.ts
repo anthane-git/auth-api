@@ -11,8 +11,7 @@ const bootstrap = async () => {
 	app.enableCors({
 		credentials: true,
 		origin: [
-			'http://localhost:5173',
-			'http://blaze.app.localhost:5173',
+			'http://localhost:5000',
 			'http://localhost',
 		],
 		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
