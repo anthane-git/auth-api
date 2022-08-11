@@ -7,6 +7,7 @@ import { AuthDto } from './dto';
 import { JwtPayload, Tokens } from './types';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +17,7 @@ export class AuthService {
 		private configSrv: ConfigService
 	) {}
 
-	async registerLocal(dto: AuthDto): Promise<Tokens> {
+	async registerLocal(dto: AuthDto, response: Response): Promise<Tokens> {
 		const hash = await argon.hash(dto.password);
 
 		const user = await this.dbSrv.user
@@ -36,13 +37,13 @@ export class AuthService {
 				throw err;
 			});
 
-		const tokens = await this.signToken(user.id, user.email);
+		const tokens = await this.signToken(user.id, user.email, response);
 		await this.updateRtHash(user.id, tokens.refresh_token);
 
 		return tokens;
 	}
 
-	async loginLocal(dto: AuthDto): Promise<Tokens> {
+	async loginLocal(dto: AuthDto, response: Response): Promise<Tokens> {
 		const user = await this.dbSrv.user.findUnique({
 			where: {
 				email: dto.email,
@@ -59,13 +60,17 @@ export class AuthService {
 			throw new ForbiddenException('Credentials Incorect');
 		}
 
-		const tokens = await this.signToken(user.id, user.email);
+		const tokens = await this.signToken(user.id, user.email, response);
 		await this.updateRtHash(user.id, tokens.refresh_token);
 
 		return tokens;
 	}
 
-	async refreshToken(userId: string, refreshTkn: string): Promise<Tokens> {
+	async refreshToken(
+		userId: string,
+		refreshTkn: string,
+		response: Response
+	): Promise<Tokens> {
 		const user = await this.dbSrv.user.findUnique({
 			where: {
 				id: userId,
@@ -78,13 +83,13 @@ export class AuthService {
 
 		if (!refreshTknMatches) throw new ForbiddenException('Access Denied');
 
-		const tokens = await this.signToken(user.id, user.email);
+		const tokens = await this.signToken(user.id, user.email, response);
 		await this.updateRtHash(user.id, tokens.refresh_token);
 
 		return tokens;
 	}
 
-	async logout(userId: string): Promise<boolean> {
+	async logout(userId: string, response: Response): Promise<boolean> {
 		await this.dbSrv.user.updateMany({
 			where: {
 				id: userId,
@@ -96,6 +101,8 @@ export class AuthService {
 				hashedRt: null,
 			},
 		});
+
+		this.unsetCookie(response);
 
 		return true;
 	}
@@ -112,7 +119,11 @@ export class AuthService {
 		});
 	}
 
-	async signToken(userId: string, email: string): Promise<Tokens> {
+	async signToken(
+		userId: string,
+		email: string,
+		response: Response
+	): Promise<Tokens> {
 		const payload: JwtPayload = {
 			sub: userId,
 			email,
@@ -129,9 +140,39 @@ export class AuthService {
 			}),
 		]);
 
+		this.setCookie(response, { accessTkn, refreshTkn });
+
 		return {
 			access_token: accessTkn,
 			refresh_token: refreshTkn,
 		};
+	}
+
+	setCookie(response: Response, { accessTkn, refreshTkn }) {
+		response.cookie('refresh-token', refreshTkn, {
+			httpOnly: true,
+			maxAge: 24 * 60 * 60 * 1000,
+			secure: false,
+			sameSite: 'lax',
+			path: '/',
+		});
+
+		response.cookie('access-token', accessTkn, {
+			maxAge: 24 * 60 * 60 * 1000,
+			secure: false,
+			sameSite: 'lax',
+			path: '/',
+		});
+	}
+
+	unsetCookie(response: Response) {
+		response.clearCookie('refresh-token', {
+			httpOnly: true,
+			path: '/',
+		});
+
+		response.clearCookie('access-token', {
+			path: '/',
+		});
 	}
 }

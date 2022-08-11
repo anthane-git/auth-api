@@ -13,23 +13,29 @@ export class RefreshTknStrategy extends PassportStrategy(
 ) {
 	constructor(configSrv: ConfigService) {
 		super({
-			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 			secretOrKey: configSrv.get('JWT_REFRESH_SECRET'),
 			passReqToCallback: true,
+			jwtFromRequest: ExtractJwt.fromExtractors([
+				(request: Request) => {
+					const data = request?.cookies['refresh-token'];
+					return data ? data : null;
+				},
+			]),
 		});
 	}
 
-	validate(req: Request, payload: JwtPayload): JwtPayloadWithRt {
-		const refreshToken = req
-			?.get('authorization')
-			?.replace('Bearer', '')
-			.trim();
+	validate(request: Request, payload: JwtPayload): JwtPayloadWithRt {
+		const refreshTkn = {
+			data:
+				request?.get('authorization')?.replace('Bearer', '').trim() ||
+				request?.cookies['refresh-token'].data,
+		};
 
-		if (!refreshToken) throw new ForbiddenException('Refresh token malformed');
+		if (!refreshTkn) throw new ForbiddenException('Refresh token malformed');
 
 		return {
+			refreshToken: refreshTkn.data,
 			...payload,
-			refreshToken,
 		};
 	}
 }

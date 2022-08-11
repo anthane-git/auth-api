@@ -6,6 +6,7 @@ import {
 	HttpCode,
 	Body,
 	Post,
+	Res,
 } from '@nestjs/common';
 
 import { RefreshTknGuard } from 'src/common/guards';
@@ -13,11 +14,8 @@ import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto';
 import { Tokens } from './types';
-import {
-	GetCurrentUser,
-	GetCurrentUserId,
-	Public,
-} from 'src/common/decorators';
+import { GetCookies, GetCurrentUserId, Public } from 'src/common/decorators';
+import { Response } from 'express';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -28,23 +26,32 @@ export class AuthController {
 	@Post('local/register')
 	@ApiBody({ type: AuthDto })
 	@HttpCode(HttpStatus.CREATED)
-	registerLocal(@Body() dto: AuthDto): Promise<Tokens> {
-		return this.authService.registerLocal(dto);
+	registerLocal(
+		@Res({ passthrough: true }) response: Response,
+		@Body() dto: AuthDto
+	): Promise<Tokens> {
+		return this.authService.registerLocal(dto, response);
 	}
 
 	@Public()
 	@Post('local/login')
 	@ApiBody({ type: AuthDto })
 	@HttpCode(HttpStatus.OK)
-	loginLocal(@Body() dto: AuthDto): Promise<Tokens> {
-		return this.authService.loginLocal(dto);
+	loginLocal(
+		@Res({ passthrough: true }) response: Response,
+		@Body() dto: AuthDto
+	): Promise<Tokens> {
+		return this.authService.loginLocal(dto, response);
 	}
 
 	@Post('logout')
 	@HttpCode(HttpStatus.OK)
 	@UseGuards(AuthGuard('jwt-access'))
-	logout(@GetCurrentUserId() userId: string): Promise<boolean> {
-		return this.authService.logout(userId);
+	logout(
+		@Res({ passthrough: true }) response: Response,
+		@GetCurrentUserId() userId: string
+	): Promise<boolean> {
+		return this.authService.logout(userId, response);
 	}
 
 	@Public()
@@ -52,9 +59,10 @@ export class AuthController {
 	@Post('refresh-token')
 	@HttpCode(HttpStatus.OK)
 	refreshToken(
+		@Res({ passthrough: true }) response: Response,
 		@GetCurrentUserId() userId: string,
-		@GetCurrentUser('refreshToken') refreshTkn: string
+		@GetCookies('refresh-token') refreshTkn: string
 	): Promise<Tokens> {
-		return this.authService.refreshToken(userId, refreshTkn);
+		return this.authService.refreshToken(userId, refreshTkn, response);
 	}
 }
