@@ -8,7 +8,7 @@ import {
 	ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiExtraModels, ApiTags } from '@nestjs/swagger';
 import { GetCurrentUserId } from 'src/common/decorators';
 
 import { UserProfileDto } from './dto';
@@ -18,6 +18,7 @@ import { UsersService } from './users.service';
 @ApiTags('users')
 @ApiBearerAuth()
 @UseInterceptors(ClassSerializerInterceptor)
+@ApiExtraModels(UserProfileDto)
 export class UsersController {
 	constructor(private usersService: UsersService) {}
 

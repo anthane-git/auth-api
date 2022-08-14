@@ -1,10 +1,10 @@
+import { APP_GUARD } from '@nestjs/core';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
-import { APP_GUARD } from '@nestjs/core';
 import { AccessTknGuard } from './common/guards';
-import { ProtectedModule } from './protected/protected.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -12,7 +12,6 @@ import { UsersModule } from './users/users.module';
 		ConfigModule.forRoot({ isGlobal: true }),
 		DatabaseModule,
 		AuthModule,
-		ProtectedModule,
 		UsersModule,
 	],
 	providers: [

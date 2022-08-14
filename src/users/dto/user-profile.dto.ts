@@ -1,23 +1,29 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { IsEmail, IsString, IsUUID } from 'class-validator';
 
 export class UserProfileDto {
-	@IsUUID()
-	readonly id: string;
-
-	@IsString()
-	readonly username: string;
-
-	@IsEmail()
-	readonly email: string;
-
-	@Exclude()
-	readonly hash: string;
-
-	@Exclude()
-	readonly hashedRt: string;
-
 	constructor(partial: Partial<UserProfileDto>) {
 		Object.assign(this, partial);
 	}
+
+	@IsUUID()
+	@ApiProperty()
+	readonly id: string;
+
+	@IsString()
+	@ApiProperty()
+	readonly username: string;
+
+	@IsEmail()
+	@ApiProperty()
+	readonly email: string;
+
+	@Exclude()
+	@ApiProperty()
+	readonly hash: string;
+
+	@Exclude()
+	@ApiProperty()
+	readonly hashedRt: string;
 }
