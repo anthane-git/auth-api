@@ -31,7 +31,10 @@ const bootstrap = async () => {
 	const document = SwaggerModule.createDocument(app, config);
 
 	app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-	SwaggerModule.setup('/', app, document);
+	SwaggerModule.setup('/', app, document, {
+		customCss: '.topbar {display: none}',
+		customSiteTitle: 'API Docs',
+	});
 
 	await app.listen(3000);
 };
