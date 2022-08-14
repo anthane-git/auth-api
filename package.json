@@ -6,6 +6,11 @@
 	"private": true,
 	"license": "GPL",
 	"scripts": {
+		"prisma:deploy": "prisma migrate deploy",
+		"db:rm": "docker compose rm postgres -s -f -v",
+		"db:up": "docker compose up postgres -d",
+		"db:migrate": "npm run db:rm && npm run db:up && sleep 1 && npm run prisma:deploy",
+		"db:show": "npx prisma studio",
 		"prebuild": "rimraf dist",
 		"build": "nest build",
 		"format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

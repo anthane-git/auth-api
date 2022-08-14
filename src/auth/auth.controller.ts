@@ -8,14 +8,14 @@ import {
 	Post,
 	Res,
 } from '@nestjs/common';
-
-import { RefreshTknGuard } from 'src/common/guards';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
-import { AuthService } from './auth.service';
-import { AuthDto } from './dto';
-import { Tokens } from './types';
-import { GetCookies, GetCurrentUserId, Public } from 'src/common/decorators';
 import { Response } from 'express';
+
+import { GetCookies, GetCurrentUserId, Public } from 'src/common/decorators';
+import { RefreshTknGuard } from 'src/common/guards';
+import { AuthService } from './auth.service';
+import { RegisterDto, LoginDto } from './dto';
+import { Tokens } from './types';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -24,22 +24,22 @@ export class AuthController {
 
 	@Public()
 	@Post('local/register')
-	@ApiBody({ type: AuthDto })
+	@ApiBody({ type: RegisterDto })
 	@HttpCode(HttpStatus.CREATED)
 	registerLocal(
 		@Res({ passthrough: true }) response: Response,
-		@Body() dto: AuthDto
+		@Body() dto: RegisterDto
 	): Promise<Tokens> {
 		return this.authService.registerLocal(dto, response);
 	}
 
 	@Public()
 	@Post('local/login')
-	@ApiBody({ type: AuthDto })
+	@ApiBody({ type: LoginDto })
 	@HttpCode(HttpStatus.OK)
 	loginLocal(
 		@Res({ passthrough: true }) response: Response,
-		@Body() dto: AuthDto
+		@Body() dto: LoginDto
 	): Promise<Tokens> {
 		return this.authService.loginLocal(dto, response);
 	}

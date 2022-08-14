@@ -13,9 +13,15 @@
     $ npm run start:prod
 ```
 
-## Api Documentation
+## Running database migrations (development only)
+
+```bash
+npx prisma migrate dev --name add ADD_COMMENT_HERE
+npm run db:migrate
+```
+
+## Database Admin Tool (prisma studio)
 
 ```
-http://127.0.0.1:3000/docs
-
+npm run db:show
 ```

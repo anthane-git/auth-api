@@ -3,7 +3,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import * as argon from 'argon2';
 
-import { AuthDto } from './dto';
+import { RegisterDto, LoginDto } from './dto';
 import { JwtPayload, Tokens } from './types';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -17,12 +17,13 @@ export class AuthService {
 		private configSrv: ConfigService
 	) {}
 
-	async registerLocal(dto: AuthDto, response: Response): Promise<Tokens> {
+	async registerLocal(dto: RegisterDto, response: Response): Promise<Tokens> {
 		const hash = await argon.hash(dto.password);
 
 		const user = await this.dbSrv.user
 			.create({
 				data: {
+					username: dto.username,
 					email: dto.email,
 					hash,
 				},
@@ -43,7 +44,7 @@ export class AuthService {
 		return tokens;
 	}
 
-	async loginLocal(dto: AuthDto, response: Response): Promise<Tokens> {
+	async loginLocal(dto: LoginDto, response: Response): Promise<Tokens> {
 		const user = await this.dbSrv.user.findUnique({
 			where: {
 				email: dto.email,

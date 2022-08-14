@@ -10,7 +10,11 @@ const bootstrap = async () => {
 
 	app.enableCors({
 		credentials: true,
-		origin: ['http://localhost:5000', 'http://localhost'],
+		origin: [
+			'http://localhost:5000',
+			'http://localhost',
+			'http://localhost:5173',
+		],
 		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 	});
 
