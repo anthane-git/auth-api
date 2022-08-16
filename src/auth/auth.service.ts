@@ -1,20 +1,20 @@
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
+import { JwtService } from '@nestjs/jwt';
+import { Response } from 'express';
 import * as argon from 'argon2';
 
 import { RegisterDto, LoginDto } from './dto';
 import { JwtPayload, Tokens } from './types';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { Response } from 'express';
+import { CertificatesService } from 'src/certificates/certificates.service';
 
 @Injectable()
 export class AuthService {
 	constructor(
 		private dbSrv: DatabaseService,
 		private jwtSrv: JwtService,
-		private configSrv: ConfigService
+		private certsSrv: CertificatesService
 	) {}
 
 	async registerLocal(dto: RegisterDto, response: Response): Promise<Tokens> {
@@ -132,12 +132,14 @@ export class AuthService {
 
 		const [accessTkn, refreshTkn] = await Promise.all([
 			this.jwtSrv.signAsync(payload, {
-				expiresIn: '30m',
-				secret: this.configSrv.get<string>('JWT_ACCESS_SECRET'),
+				expiresIn: '60s',
+				secret: this.certsSrv.init({ token: 'access', type: 'private' }),
+				algorithm: 'RS256',
 			}),
 			this.jwtSrv.signAsync(payload, {
 				expiresIn: '7d',
-				secret: this.configSrv.get<string>('JWT_REFRESH_SECRET'),
+				secret: this.certsSrv.init({ token: 'refresh', type: 'private' }),
+				algorithm: 'RS256',
 			}),
 		]);
 

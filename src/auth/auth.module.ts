@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 
+import { CertificatesService } from 'src/certificates/certificates.service';
 import { AccessTknStrategy, RefreshTknStrategy } from './strategies';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -8,6 +9,11 @@ import { AuthService } from './auth.service';
 @Module({
 	imports: [JwtModule.register({})],
 	controllers: [AuthController],
-	providers: [AuthService, AccessTknStrategy, RefreshTknStrategy],
+	providers: [
+		AuthService,
+		AccessTknStrategy,
+		RefreshTknStrategy,
+		CertificatesService,
+	],
 })
 export class AuthModule {}

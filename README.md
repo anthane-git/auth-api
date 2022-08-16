@@ -25,3 +25,13 @@ npm run db:migrate
 ```
 npm run db:show
 ```
+
+## Generate Secrets
+
+```bash
+openssl genrsa -out access.tkn.private.pem 4096
+openssl rsa -in access.tkn.private.pem -pubout -out access.tkn.public.pem
+
+openssl genrsa -out refresh.tkn.private.pem 4096
+openssl rsa -in refresh.tkn.private.pem -pubout -out refresh.tkn.public.pem
+```
