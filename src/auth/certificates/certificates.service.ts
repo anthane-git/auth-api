@@ -6,11 +6,11 @@ import { Certs } from './types';
 
 @Injectable()
 export class CertificatesService {
-	init({ token, type }: Certs) {
+	get({ token, type, decode = true }: Certs): string | Buffer {
 		if (!token || !type) return;
 
-		const path = resolve(__dirname, `../certs/${token}.tkn.${type}.pem`);
-		const secret = readFileSync(path, 'utf-8');
+		const path = resolve(__dirname, `../../certs/${token}.tkn.${type}.pem`);
+		const secret = readFileSync(path, decode ? 'utf-8' : undefined);
 
 		return secret;
 	}

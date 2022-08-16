@@ -5,16 +5,18 @@ import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import * as argon from 'argon2';
 
+import { CertificatesService } from './certificates/certificates.service';
 import { RegisterDto, LoginDto } from './dto';
 import { JwtPayload, Tokens } from './types';
-import { CertificatesService } from 'src/certificates/certificates.service';
+import { JwkService } from './jwk/jwk.service';
 
 @Injectable()
 export class AuthService {
 	constructor(
 		private dbSrv: DatabaseService,
 		private jwtSrv: JwtService,
-		private certsSrv: CertificatesService
+		private certsSrv: CertificatesService,
+		private jwkSrv: JwkService
 	) {}
 
 	async registerLocal(dto: RegisterDto, response: Response): Promise<Tokens> {
@@ -133,12 +135,12 @@ export class AuthService {
 		const [accessTkn, refreshTkn] = await Promise.all([
 			this.jwtSrv.signAsync(payload, {
 				expiresIn: '60s',
-				secret: this.certsSrv.init({ token: 'access', type: 'private' }),
+				secret: this.certsSrv.get({ token: 'access', type: 'private' }),
 				algorithm: 'RS256',
 			}),
 			this.jwtSrv.signAsync(payload, {
 				expiresIn: '7d',
-				secret: this.certsSrv.init({ token: 'refresh', type: 'private' }),
+				secret: this.certsSrv.get({ token: 'refresh', type: 'private' }),
 				algorithm: 'RS256',
 			}),
 		]);
@@ -177,5 +179,15 @@ export class AuthService {
 		response.clearCookie('access-token', {
 			path: '/',
 		});
+	}
+
+	async publicKey() {
+		const privateKey = this.certsSrv.get({
+			token: 'access',
+			type: 'private',
+			decode: false,
+		});
+
+		return this.jwkSrv.init(privateKey as Buffer);
 	}
 }

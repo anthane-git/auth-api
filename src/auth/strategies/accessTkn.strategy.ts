@@ -2,8 +2,8 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 
+import { CertificatesService } from '../certificates/certificates.service';
 import { JwtPayload } from '../types';
-import { CertificatesService } from 'src/certificates/certificates.service';
 
 @Injectable()
 export class AccessTknStrategy extends PassportStrategy(
@@ -13,7 +13,7 @@ export class AccessTknStrategy extends PassportStrategy(
 	constructor(certsSrv: CertificatesService) {
 		super({
 			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-			secretOrKey: certsSrv.init({ token: 'access', type: 'public' }),
+			secretOrKey: certsSrv.get({ token: 'access', type: 'public' }),
 			ignoreExpiration: false,
 		});
 	}

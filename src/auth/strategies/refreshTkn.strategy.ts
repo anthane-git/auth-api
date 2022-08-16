@@ -1,9 +1,9 @@
-import { CertificatesService } from 'src/certificates/certificates.service';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 
+import { CertificatesService } from '../certificates/certificates.service';
 import { JwtPayload, JwtPayloadWithRt } from '../types';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class RefreshTknStrategy extends PassportStrategy(
 ) {
 	constructor(certsSrv: CertificatesService) {
 		super({
-			secretOrKey: certsSrv.init({ token: 'refresh', type: 'public' }),
+			secretOrKey: certsSrv.get({ token: 'refresh', type: 'public' }),
 			passReqToCallback: true,
 			jwtFromRequest: ExtractJwt.fromExtractors([
 				(request: Request) => {
