@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
-import { Certs } from './types';
+import { Certs } from '../types';
 
 @Injectable()
 export class CertificatesService {
