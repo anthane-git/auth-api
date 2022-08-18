@@ -134,7 +134,7 @@ export class AuthService {
 
 		const [accessTkn, refreshTkn] = await Promise.all([
 			this.jwtSrv.signAsync(payload, {
-				expiresIn: '60s',
+				expiresIn: '30m',
 				secret: this.certsSrv.get({ token: 'access', type: 'private' }),
 				algorithm: 'RS256',
 			}),
