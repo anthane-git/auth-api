@@ -145,7 +145,7 @@ export class AuthService {
 			}),
 		]);
 
-		this.setCookie(response, { accessTkn, refreshTkn });
+		this.setCookie(response, { refreshTkn });
 
 		return {
 			access_token: accessTkn,
@@ -153,16 +153,9 @@ export class AuthService {
 		};
 	}
 
-	setCookie(response: Response, { accessTkn, refreshTkn }) {
+	setCookie(response: Response, { refreshTkn }) {
 		response.cookie('refresh-token', refreshTkn, {
 			httpOnly: true,
-			maxAge: 24 * 60 * 60 * 1000,
-			secure: false,
-			sameSite: 'lax',
-			path: '/',
-		});
-
-		response.cookie('access-token', accessTkn, {
 			maxAge: 24 * 60 * 60 * 1000,
 			secure: false,
 			sameSite: 'lax',
@@ -173,10 +166,6 @@ export class AuthService {
 	unsetCookie(response: Response) {
 		response.clearCookie('refresh-token', {
 			httpOnly: true,
-			path: '/',
-		});
-
-		response.clearCookie('access-token', {
 			path: '/',
 		});
 	}
