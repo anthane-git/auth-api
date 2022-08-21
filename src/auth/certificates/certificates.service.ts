@@ -9,7 +9,7 @@ export class CertificatesService {
 	get({ token, type, decode = true }: Certs): string | Buffer {
 		if (!token || !type) return;
 
-		const path = resolve(__dirname, `../../certs/${token}.tkn.${type}.pem`);
+		const path = resolve(__dirname, `../../secrets/${token}.tkn.${type}.pem`);
 		const secret = readFileSync(path, decode ? 'utf-8' : undefined);
 
 		return secret;

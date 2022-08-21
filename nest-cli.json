@@ -5,8 +5,8 @@
 	"compilerOptions": {
 		"assets": [
 			{
-				"include": "../views/certs",
-				"outDir": "dist/certs",
+				"include": "../secrets/",
+				"outDir": "dist/secrets",
 				"watchAssets": true
 			}
 		],
