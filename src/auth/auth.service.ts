@@ -9,6 +9,7 @@ import { CertificatesService } from './certificates/certificates.service';
 import { RegisterDto, LoginDto } from './dto';
 import { JwtPayload, Tokens } from './types';
 import { JwkService } from './jwk/jwk.service';
+import { createHmac } from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -137,6 +138,10 @@ export class AuthService {
 				expiresIn: '30m',
 				secret: this.certsSrv.get({ token: 'access', type: 'private' }),
 				algorithm: 'RS256',
+				keyid: createHmac(
+					'sha256',
+					this.certsSrv.get({ token: 'access', type: 'private' })
+				).digest('base64'),
 			}),
 			this.jwtSrv.signAsync(payload, {
 				expiresIn: '7d',
