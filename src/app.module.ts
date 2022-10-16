@@ -14,7 +14,7 @@ const mode = process.env.NODE_ENV;
 		UsersModule,
 		DatabaseModule,
 		ConfigModule.forRoot({
-			envFilePath: !mode ? '.env' : `.env.${mode}`,
+			envFilePath: !mode ? '.env.production' : `.env.${mode}`,
 			isGlobal: true,
 		}),
 	],
