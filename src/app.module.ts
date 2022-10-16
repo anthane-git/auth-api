@@ -7,12 +7,16 @@ import { AuthModule } from './auth/auth.module';
 import { AccessTknGuard } from './common/guards';
 import { UsersModule } from './users/users.module';
 
+const mode = process.env.NODE_ENV;
 @Module({
 	imports: [
 		AuthModule,
 		UsersModule,
 		DatabaseModule,
-		ConfigModule.forRoot({ isGlobal: true }),
+		ConfigModule.forRoot({
+			envFilePath: !mode ? '.env' : `.env.${mode}`,
+			isGlobal: true,
+		}),
 	],
 	providers: [
 		{
